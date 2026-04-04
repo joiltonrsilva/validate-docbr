@@ -76,6 +76,22 @@ class TestCpf(unittest.TestCase):
             # Then
             self.assertEqual(doc_validated, is_valid)
 
+    def test_mask_with_partial_punctuation(self):
+        # Given
+        cases = [
+            ('12345678910', '123.456.789-10'),
+            ('123.456.789-10', '123.456.789-10'),
+            ('123.45678910', '123.456.789-10'),
+            ('123456789-10', '123.456.789-10'),
+        ]
+
+        # When
+        for doc, expected in cases:
+            masked = self.cpf.mask(doc)
+
+            # Then
+            self.assertEqual(masked, expected)
+
     def test_add_leading_zeros(self):
         # Given
         cases = [

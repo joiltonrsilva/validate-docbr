@@ -52,11 +52,12 @@ class PIS(DocumentBase):
         """Coloca a máscara de PIS/NIS/PASEP/NIT no documento.
 
         Args:
-            doc: PIS sem máscara (11 dígitos).
+            doc: PIS com ou sem máscara.
 
         Returns:
             PIS formatado no padrão ``XXX.XXXXX.XX-X``.
         """
+        doc = self._only_digits(doc)
         return f"{doc[:3]}.{doc[3:8]}.{doc[8:10]}-{doc[10:]}"
 
     def _generate_digit(self, doc: str | list[str]) -> str:

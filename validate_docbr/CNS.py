@@ -78,11 +78,12 @@ class CNS(DocumentBase):
         """Coloca a máscara de CNS no documento.
 
         Args:
-            doc: CNS sem máscara (15 dígitos).
+            doc: CNS com ou sem máscara.
 
         Returns:
             CNS formatado no padrão ``XXX XXXX XXXX XXXX``.
         """
+        doc = self._only_digits(doc)
         return f"{doc[:3]} {doc[3:7]} {doc[7:11]} {doc[-4:]}"
 
     def _generate_first_case(self, cns: list, random_digits: bool = False) -> list:

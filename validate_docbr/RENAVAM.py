@@ -52,11 +52,12 @@ class RENAVAM(DocumentBase):
         """Coloca a máscara de RENAVAM no documento.
 
         Args:
-            doc: RENAVAM sem máscara (11 dígitos).
+            doc: RENAVAM com ou sem máscara.
 
         Returns:
             RENAVAM formatado no padrão ``XXXXXXXXXX-X``.
         """
+        doc = self._only_digits(doc)
         return f"{doc[:10]}-{doc[10]}"
 
     def _generate_last_digit(self, doc: str | list[str]) -> str:

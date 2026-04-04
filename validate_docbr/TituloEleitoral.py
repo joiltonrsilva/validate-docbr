@@ -72,11 +72,12 @@ class TituloEleitoral(DocumentBase):
         """Coloca a máscara de Título Eleitoral no documento.
 
         Args:
-            doc: Título Eleitoral sem máscara (12 dígitos).
+            doc: Título Eleitoral com ou sem máscara.
 
         Returns:
             Título Eleitoral formatado no padrão ``XXXX XXXX XXXX``.
         """
+        doc = self._only_digits(doc)
         return f'{doc[0:4]} {doc[4:8]} {doc[8:]}'
 
     def _compute_first_check_digit(self, doc_digits: list[int]) -> int:

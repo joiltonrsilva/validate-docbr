@@ -58,11 +58,12 @@ class CPF(DocumentBase):
         """Coloca a máscara de CPF no documento.
 
         Args:
-            doc: CPF sem máscara (11 dígitos).
+            doc: CPF com ou sem máscara.
 
         Returns:
             CPF formatado no padrão ``XXX.XXX.XXX-XX``.
         """
+        doc = self._only_digits(doc)
         return f"{doc[:3]}.{doc[3:6]}.{doc[6:9]}-{doc[-2:]}"
 
     def _generate_first_digit(self, doc: list) -> str:

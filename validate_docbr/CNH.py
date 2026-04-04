@@ -51,11 +51,12 @@ class CNH(DocumentBase):
         """Coloca a máscara de CNH no documento.
 
         Args:
-            doc: CNH sem máscara (11 dígitos).
+            doc: CNH com ou sem máscara.
 
         Returns:
             CNH formatada no padrão ``XXX XXX XXX XX``.
         """
+        doc = self._only_digits(doc)
         return f"{doc[:3]} {doc[3:6]} {doc[6:9]} {doc[9:]}"
 
     def _generate_first_digit(self, doc: str | list[str]) -> str:

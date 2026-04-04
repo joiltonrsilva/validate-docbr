@@ -77,12 +77,13 @@ class Certidao(DocumentBase):
         """Coloca a máscara de Certidão no documento.
 
         Args:
-            doc: Certidão sem máscara (32 dígitos).
+            doc: Certidão com ou sem máscara.
 
         Returns:
             Certidão formatada no padrão
             ``XXXXXX.XX.XX.XXXX.X.XXXXX.XXX.XXXXXXX-XX``.
         """
+        doc = self._only_digits(doc)
         return "{}.{}.{}.{}.{}.{}.{}.{}-{}".format(
             doc[:6], doc[6:8], doc[8:10], doc[10:14],
             doc[14], doc[15:20], doc[20:23], doc[23:30], doc[-2:])

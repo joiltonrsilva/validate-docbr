@@ -69,11 +69,12 @@ class CNPJ(DocumentBase):
         """Coloca a máscara de CNPJ no documento.
 
         Args:
-            doc: CNPJ sem máscara (14 caracteres).
+            doc: CNPJ com ou sem máscara.
 
         Returns:
             CNPJ formatado no padrão ``XX.XXX.XXX/XXXX-XX``.
         """
+        doc = self._only_digits_and_letters(doc.strip().upper())
         return f"{doc[:2]}.{doc[2:5]}.{doc[5:8]}/{doc[8:12]}-{doc[-2:]}"
 
     def _generate_first_digit(self, doc: str | list[str]) -> str:
