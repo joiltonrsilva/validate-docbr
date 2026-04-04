@@ -10,45 +10,52 @@ jobs:
   check-version:
     runs-on: ubuntu-latest
     outputs:
-      version_changed: ${{ steps.check.outputs.changed }}
-      new_version: ${{ steps.check.outputs.version }}
+      should_release: ${{ steps.check.outputs.should_release }}
+      version: ${{ steps.check.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
-      - name: Verifica mudança de versão
+      - name: Verifica se precisa de release
         id: check
         run: |
-          VERSION_SED='s/.*"\(.*\)"/\1/'
-          CURRENT=$(grep -m1 '^version' pyproject.toml \
-            | sed "$VERSION_SED")
-          git show HEAD~1:pyproject.toml \
-            > /tmp/old_pyproject.toml 2>/dev/null || true
-          OLD=$(grep -m1 '^version' /tmp/old_pyproject.toml \
-            2>/dev/null | sed "$VERSION_SED" || echo "")
-          echo "current=$CURRENT old=$OLD"
-          if [ "$CURRENT" != "$OLD" ] && [ -n "$CURRENT" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "version=$CURRENT" >> "$GITHUB_OUTPUT"
+          VERSION=$(grep -m1 '^version' pyproject.toml \
+            | sed 's/.*"\(.*\)"/\1/')
+          TAG="v${VERSION}"
+          echo "version=$VERSION tag=$TAG"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG já existe"
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
           else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Tag $TAG não existe"
+            echo "should_release=true" >> "$GITHUB_OUTPUT"
+            echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           fi
 
-  create-release:
+  release:
     needs: check-version
-    if: needs.check-version.outputs.version_changed == 'true'
+    if: needs.check-version.outputs.should_release == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v7
 
       - name: Cria release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ needs.check-version.outputs.new_version }}
+          VERSION: ${{ needs.check-version.outputs.version }}
         run: |
           gh release create "v${VERSION}" \
             --title "v${VERSION}" \
             --generate-notes
+
+      - name: Build
+        run: uv build
+
+      - name: Publish
+        run: uv publish --trusted-publishing always
