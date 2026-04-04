@@ -28,7 +28,6 @@ existem pessoas vinculadas a eles. Usei a base de dados da
 [Coleção de CNPJs e CPFs brasileiros do Brasil.IO][brasil.io]
 para verificar esses documentos:
 
-<!-- markdownlint-disable MD013 -->
 
 | CPF | Pessoa | Consulta |
 | --- | ------ | -------- |
@@ -43,7 +42,6 @@ para verificar esses documentos:
 | 888.888.888-88 | - | `https://brasil.io/dataset/documentos-brasil/documents?search=88888888888&document_type=CPF&document=&name=&sources=` |
 | 999.999.999-99 | JOAQUIM ROCHA MATOS | `https://brasil.io/dataset/documentos-brasil/documents?search=99999999999&document_type=CPF&document=&name=&sources=` |
 
-<!-- markdownlint-enable MD013 -->
 
 Porém, é comum optar por não validar esses CPFs. Para isso basta usar o parâmetro `repeated_digits`
 (por padrão é `False`) da classe `CPF` ou mudar a variável de mesmo nome no objeto criado.
@@ -70,7 +68,7 @@ Valida uma lista de documentos passado como argumento. Retorna uma lista de `boo
 
 | Parâmetro | Tipo | Valor padrão | Obrigatório | Descrição |
 | --------- | ---- | ----------- | ------------ | --------- |
-| `docs` | `List[str]`| `[]` | X | A lista de documentos para validar. |
+| `docs` | `list[str]`| `[]` | X | A lista de documentos para validar. |
 
 ```python
 from validate_docbr import CPF
@@ -89,13 +87,11 @@ não precisa-se instanciar uma classe para uso.
 Valida vários documentos difererentes. Retorna uma lista com valores `bool` para cada tupla
 da lista (na mesma ordem), `True` caso seja válido, `False` caso contrário. Recebe os parâmetros:
 
-<!-- markdownlint-disable MD013 -->
 
 | Parâmetro | Tipo | Valor padrão | Obrigatório | Descrição |
 | --------- | ---- | ----------- | ------------ | --------- |
-| `documents` | `List[Tuple[BaseDoc, str]]`| `[]` | X | Lista de tuplas, cada tupla possui como primeiro elemento o tipo de documento e o segundo elemento o valor que se deseja validar. |
+| `documents` | `list[tuple[DocumentBase, str]]`| `[]` | X | Lista de tuplas, cada tupla possui como primeiro elemento o tipo de documento e o segundo elemento o valor que se deseja validar. |
 
-<!-- markdownlint-enable MD013 -->
 
 ```python
 import validate_docbr as docbr
@@ -110,13 +106,11 @@ docbr.validate_docs(docs)  # [True, False]
 
 Gera um novo documento, retorna em formato de `str`. Recebe os parâmetros:
 
-<!-- markdownlint-disable MD013 -->
 
 | Parâmetro | Tipo | Valor padrão | Obrigatório | Descrição |
 | --------- | ---- | ----------- | ------------ | --------- |
 | `mask` | `bool` | `False` | - | Quando possui o valor `True`, o documento retornado estará formatado. |
 
-<!-- markdownlint-enable MD013 -->
 
 ```python
 from validate_docbr import CPF

@@ -82,5 +82,4 @@ Done:
 
 - [x] Migrate Makefile to Taskfile
 
-Pending:
-- [ ] Migrate documentation tool (from MkDocs to Docsify/Docusaurus/GitBook)
+- [x] Migrate documentation tool (from MkDocs to Docsify)
