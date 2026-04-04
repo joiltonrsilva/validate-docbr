@@ -14,15 +14,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-All commands run via Docker. Run `make build` first to set up the container.
+All commands run via Docker using [Task](https://taskfile.dev/). Run `task build` first to set up the container.
 
 ```bash
-make build            # Build Docker image (also installs git hooks)
-make test             # Run all tests with pytest
-make test-coverage    # Run tests with coverage (fail threshold: 98.00%)
-make lint             # Run all linters (commit, markdown, dockerfile, yaml, shell, python)
-make lint-fix         # Auto-fix Python lint issues
-make shell            # Open a bash shell in the container
+task build            # Build Docker image (also installs git hooks)
+task test             # Run all tests with pytest
+task test-coverage    # Run tests with coverage (fail threshold: 98.00%)
+task lint             # Run all linters (commit, markdown, dockerfile, yaml, shell, python)
+task lint-fix         # Auto-fix Python lint issues
+task shell            # Open a bash shell in the container
 ```
 
 To run a single test file or test inside the container:
@@ -62,7 +62,7 @@ Each document class (e.g., `CPF.py`, `CNPJ.py`) implements the three abstract me
 
 ## CI/Pre-push
 
-- **Pre-push hook** runs lint + test-coverage (installed via `make build` → `git config core.hooksPath .githooks`)
+- **Pre-push hook** runs lint + test-coverage (installed via `task build` → `git config core.hooksPath .githooks`)
 - **GitHub Actions** (`integration.yml`) runs lint then tests on PRs to `main`
 - Coverage must stay at or above **98.00%**
 
@@ -75,10 +75,12 @@ Done:
 - [x] Tests refactored to Given-When-Then pattern
 - [x] Coverage threshold raised to 98%
 
+- [x] Accept new alphanumeric CNPJ format (both old numeric and new alphanumeric accepted)
+- [x] Improve code readability (renamed `sum` → `total` to avoid shadowing builtin, descriptive variable names, eliminated unnecessary `else`, extracted constants)
+- [x] Use RegEx for document string validation (`_validate_input` now uses `re.match`)
+- [x] Improve docstrings (Google Style Guide with `Args:`, `Returns:`, `Raises:`)
+
+- [x] Migrate Makefile to Taskfile
+
 Pending:
-- [ ] Accept new alphanumeric CNPJ format (must accept both old numeric and new alphanumeric)
-- [ ] Improve code readability (rename single-letter variables, avoid `else`, etc.)
-- [ ] Use RegEx for document string validation
-- [ ] Improve docstrings (Google Style Guide)
 - [ ] Migrate documentation tool (from MkDocs to Docsify/Docusaurus/GitBook)
-- [ ] Consider migrating Makefile to Taskfile

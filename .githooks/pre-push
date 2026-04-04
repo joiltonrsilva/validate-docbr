@@ -6,9 +6,9 @@ handle_failure() {
 }
 
 echo "🔍 Running lint checks..."
-make lint || handle_failure "lint"
+task lint || handle_failure "lint"
 
 echo "🧪 Running test coverage..."
-make test-coverage || handle_failure "test-coverage"
+task test-coverage || handle_failure "test-coverage"
 
 echo "✅ All checks passed successfully!"
