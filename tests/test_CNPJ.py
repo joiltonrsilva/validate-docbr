@@ -41,6 +41,9 @@ class TestCnpj(unittest.TestCase):
             ('00000-000/0000', False),
             ('AAAA0AAAAAAA2AAAAAA', False),
             ('74600269000145', True),
+            ('00000000000000', False),
+            ('00.000.000/0000-00', False),
+            ('11111111111111', False),
         ]
 
         # When

@@ -38,6 +38,9 @@ class CNPJ(DocumentBase):
         if len(doc) != 14:
             return False
 
+        if self._is_repeated_characters(doc):
+            return False
+
         return self._generate_first_digit(doc) == doc[12] \
                and self._generate_second_digit(doc) == doc[13]
 
@@ -116,3 +119,16 @@ class CNPJ(DocumentBase):
 
         remainder = total % 11
         return str(0 if remainder < 2 else 11 - remainder)
+
+    def _is_repeated_characters(self, doc: str) -> bool:
+        """Verifica se o CNPJ contém apenas caracteres repetidos.
+
+        Exemplo: ``00000000000000``.
+
+        Args:
+            doc: String com os caracteres do CNPJ.
+
+        Returns:
+            True se todos os caracteres forem iguais.
+        """
+        return len(set(doc)) == 1
