@@ -44,10 +44,17 @@ class TestValidateDocs(unittest.TestCase):
         # Then
         self.assertEqual(docbr.validate_docs(documents), right_answers)
 
+    def test_validate_docs_none(self):
+        # When
+        result = docbr.validate_docs()
+
+        # Then
+        self.assertEqual(result, [])
+
     def test_validate_docs_type_error(self):
         # Given
         cpf = [('cpf', docbr.CPF().generate())]
         
         # When-Then
         with self.assertRaises(TypeError):
-            docbr.validate_docs(cpf)
+            docbr.validate_docs(cpf)  # ty: ignore[invalid-argument-type]

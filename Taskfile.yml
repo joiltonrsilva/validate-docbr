@@ -2,12 +2,10 @@
 version: '3'
 
 vars:
-  APP_NAME: app
   ROOT:
     sh: pwd
   DOCKER_IMAGE_LINTER: alvarofpp/linter:latest
   LINT_COMMIT_TARGET_BRANCH: origin/main
-  TEST_CONTAINER_NAME: '{{.APP_NAME}}_test'
 
 tasks:
   install-hooks:
@@ -46,23 +44,24 @@ tasks:
     desc: Corrige problemas de lint do Python automaticamente
     cmds:
       - docker pull {{.DOCKER_IMAGE_LINTER}}
-      - docker run --rm -v {{.ROOT}}:/app {{.DOCKER_IMAGE_LINTER}} "lint-python-fix"
+      - >-
+        docker run --rm -v {{.ROOT}}:/app
+        {{.DOCKER_IMAGE_LINTER}} "lint-python-fix"
 
   test:
     desc: Executa os testes com pytest
     cmds:
-      - >-
-        docker compose run --rm -v {{.ROOT}}:/app
-        --name {{.TEST_CONTAINER_NAME}} {{.APP_NAME}}
-        pytest
+      - uv run pytest
 
   test-coverage:
     desc: Executa os testes com cobertura (threshold 98%)
     cmds:
-      - >-
-        docker compose run --rm -T -v {{.ROOT}}:/app
-        --name {{.TEST_CONTAINER_NAME}} {{.APP_NAME}}
-        /bin/bash -c "pytest --cov=validate_docbr/"
+      - uv run pytest --cov=validate_docbr/
+
+  type-check:
+    desc: Executa verificação de tipos com ty
+    cmds:
+      - uv run ty check
 
   ci:
     desc: Executa lint e testes com cobertura (usado no CI)
@@ -73,4 +72,4 @@ tasks:
   shell:
     desc: Abre um shell bash no container
     cmds:
-      - docker compose run --rm {{.APP_NAME}} bash
+      - docker compose run --rm app bash

@@ -22,19 +22,19 @@ class CPF(DocumentBase):
         if not self._validate_input(doc, ['.', '-']):
             return False
 
-        doc = list(self._only_digits(doc))
+        digits = list(self._only_digits(doc))
 
-        if len(doc) > 11:
+        if len(digits) > 11:
             return False
 
-        if len(doc) < 11:
-            doc = self._complete_with_zeros(doc)
+        if len(digits) < 11:
+            digits = self._complete_with_zeros(digits)
 
-        if not self.repeated_digits and self._check_repeated_digits(doc):
+        if not self.repeated_digits and self._check_repeated_digits(digits):
             return False
 
-        return self._generate_first_digit(doc) == doc[9] \
-            and self._generate_second_digit(doc) == doc[10]
+        return self._generate_first_digit(digits) == digits[9] \
+            and self._generate_second_digit(digits) == digits[10]
 
     def generate(self, mask: bool = False) -> str:
         """Gera um CPF válido.
@@ -121,7 +121,7 @@ class CPF(DocumentBase):
         """
         return len(set(doc)) == 1
 
-    def _complete_with_zeros(self, doc: str) -> list[str]:
+    def _complete_with_zeros(self, doc: list[str]) -> list[str]:
         """Adiciona zeros à esquerda para completar o CPF.
 
         Args:

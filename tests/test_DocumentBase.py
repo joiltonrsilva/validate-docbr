@@ -10,14 +10,14 @@ class DocumentBaseFaker(docbr.DocumentBase):
         self._counter = 0
 
     def validate(self, doc: str = '') -> bool:
-        pass
+        return False
 
     def generate(self, mask: bool = False) -> str:
         self._counter += 1
         return f"test-{self._counter}"
 
     def mask(self, doc: str = '') -> str:
-        pass
+        return doc
 
 
 class DocumentBaseDuplicateFaker(docbr.DocumentBase):
@@ -27,7 +27,7 @@ class DocumentBaseDuplicateFaker(docbr.DocumentBase):
         self._call_count = 0
 
     def validate(self, doc: str = '') -> bool:
-        pass
+        return False
 
     def generate(self, mask: bool = False) -> str:
         self._call_count += 1
@@ -36,7 +36,7 @@ class DocumentBaseDuplicateFaker(docbr.DocumentBase):
         return f"unique-{self._call_count}"
 
     def mask(self, doc: str = '') -> str:
-        pass
+        return doc
 
 
 class TestDocumentBase(unittest.TestCase):

@@ -8,8 +8,7 @@ when working with code in this repository.
 **validate-docbr** is a Python package for validating and
 generating Brazilian documents (CPF, CNPJ, CNH, CNS, PIS,
 Título Eleitoral, RENAVAM, Certidão). Published on PyPI as
-`validate-docbr`. Currently working toward **v2.0.0**
-(see issue #67).
+`validate-docbr`, version **2.0.0**.
 
 ## Language Conventions
 
@@ -17,27 +16,34 @@ Título Eleitoral, RENAVAM, Certidão). Published on PyPI as
 - **Comments, docstrings, docs, commits, issues**: **pt-BR**
 - **Claude files** (CLAUDE.md, agents, commands): **English**
 
-## Commands
+## Tooling
 
-All commands run via Docker using [Task](https://taskfile.dev/).
-Run `task build` first to set up the container.
+- **Package manager**: [uv](https://docs.astral.sh/uv/)
+  (`pyproject.toml` + `uv.lock`)
+- **Type checker**: [ty](https://docs.astral.sh/ty/)
+- **Task runner**: [Task](https://taskfile.dev/)
+  (`Taskfile.yml`)
+- **Tests**: pytest 9.0.2 + pytest-cov 7.1.0
+- **Python**: >= 3.10 (tested 3.10–3.14)
+
+## Commands
 
 ```bash
 task build            # Build Docker image (installs git hooks)
 task test             # Run all tests with pytest
 task test-coverage    # Run tests with coverage (threshold 98%)
+task type-check       # Run ty type checker
 task lint             # Run all linters
 task lint-fix         # Auto-fix Python lint issues
+task ci               # Run lint + test-coverage
 task shell            # Open a bash shell in the container
 ```
 
-To run a single test file or test inside the container:
+To run a single test:
 
 ```bash
-docker compose run --rm -v $(pwd):/app app \
-  pytest tests/test_CPF.py
-docker compose run --rm -v $(pwd):/app app \
-  pytest tests/test_CPF.py::TestCpf::test_mask
+uv run pytest tests/test_CPF.py
+uv run pytest tests/test_CPF.py::TestCpf::test_mask
 ```
 
 ## Architecture
@@ -72,6 +78,7 @@ that validates heterogeneous document lists.
 3. Export it in `validate_docbr/__init__.py`
 4. Add tests in `tests/test_<Name>.py`
    (use `unittest` with Given-When-Then pattern)
+5. Run `task type-check` and `task test-coverage`
 
 ## Coding Conventions
 
@@ -81,25 +88,12 @@ that validates heterogeneous document lists.
   (`from validate_docbr.DocumentBase import DocumentBase`)
 - **Tests**: Given-When-Then with `# Given`, `# When`,
   `# Then` comments
+- **Type safety**: code must pass `ty check` with no errors
 
 ## CI/Pre-push
 
 - **Pre-push hook** runs lint + test-coverage
   (installed via `task build`)
 - **GitHub Actions** (`ci.yml`) runs lint then tests
-  on PRs to `main`
+  across Python 3.10–3.14 using `uv`
 - Coverage must stay at or above **98.00%**
-
-## v2.0.0 Roadmap (issue #67)
-
-- [x] Rename `BaseDoc` → `DocumentBase`
-- [x] Abstract methods raise `FunctionNotImplementedError`
-- [x] Type hints modernized to PEP 585 generic syntax
-- [x] Tests refactored to Given-When-Then pattern
-- [x] Coverage threshold raised to 98%
-- [x] Accept new alphanumeric CNPJ format
-- [x] Improve code readability
-- [x] Use RegEx for document string validation
-- [x] Improve docstrings (Google Style Guide)
-- [x] Migrate Makefile to Taskfile
-- [x] Migrate documentation tool (MkDocs to Docsify)

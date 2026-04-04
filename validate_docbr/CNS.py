@@ -22,12 +22,12 @@ class CNS(DocumentBase):
         if not self._validate_input(doc, [' ']):
             return False
 
-        doc = list(self._only_digits(doc))
+        digits = list(self._only_digits(doc))
 
-        if len(doc) != 15 or int(doc[0]) not in self.first_digit:
+        if len(digits) != 15 or int(digits[0]) not in self.first_digit:
             return False
 
-        return self._check_cns_valid(doc)
+        return self._check_cns_valid(digits)
 
     def _validate_first_case(self, doc: list) -> bool:
         """Valida CNSs que comecem com 1 ou 2.

@@ -3,7 +3,9 @@ import inspect
 from validate_docbr.DocumentBase import DocumentBase
 
 
-def validate_docs(documents: list[tuple[type[DocumentBase], str]] = list) -> list[bool]:
+def validate_docs(
+    documents: list[tuple[type[DocumentBase], str]] | None = None,
+) -> list[bool]:
     """Recebe uma lista de tuplas (classe, valor) e valida cada documento.
 
     Args:
@@ -18,6 +20,9 @@ def validate_docs(documents: list[tuple[type[DocumentBase], str]] = list) -> lis
         TypeError: Se o primeiro elemento da tupla não for uma
             subclasse de ``DocumentBase``.
     """
+    if documents is None:
+        return []
+
     validations = []
 
     for doc_class, doc_value in documents:
