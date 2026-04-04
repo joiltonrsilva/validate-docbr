@@ -23,7 +23,7 @@ You are a Python expert working on validate-docbr, a pure Python library (no fra
 - Type hints on all public method signatures (parameters and return types)
 - Use modern syntax: `str | None` not `Optional[str]`, `list[str]` not `List[str]`
 - Avoid `Any` — be specific
-- Use `abc.ABC` and `@abstractmethod` for interfaces (already established in BaseDoc)
+- Use `abc.ABC` and `@abstractmethod` for interfaces (already established in DocumentBase)
 - The package ships a `py.typed` marker — maintain type correctness
 
 ### Examples
@@ -31,10 +31,13 @@ You are a Python expert working on validate-docbr, a pure Python library (no fra
 # Good
 def validate(self, doc: str = "") -> bool: ...
 def generate_list(self, n: int = 1, mask: bool = False, repeat: bool = False) -> list[str]: ...
+def _generate_digit(self, doc: str) -> str | list[str]: ...
 
 # Bad
 def validate(self, doc=""): ...  # missing hints
 def generate_list(self, n=1, mask=False, repeat=False) -> list: ...  # untyped list
+from typing import List, Optional  # don't use typing module
+def _generate_digit(self, doc: str) -> Union[str, list]: ...  # old syntax
 ```
 
 ## Pythonic Patterns
@@ -66,7 +69,7 @@ def generate_list(self, n=1, mask=False, repeat=False) -> list: ...  # untyped l
 - Cyclomatic complexity: keep low — split complex validation logic into helper methods
 
 ### Naming (PEP 8)
-- Classes: `PascalCase` (e.g., `TituloEleitoral`, `BaseDoc`)
+- Classes: `PascalCase` (e.g., `TituloEleitoral`, `DocumentBase`)
 - Methods/functions: `snake_case` (e.g., `validate_list`, `_only_digits`)
 - Constants: `UPPER_SNAKE` (e.g., `WEIGHTS = [5, 4, 3, 2]`)
 - Private/internal: prefix `_` (e.g., `_validate_input`, `_only_digits`)
@@ -76,7 +79,8 @@ def generate_list(self, n=1, mask=False, repeat=False) -> list: ...  # untyped l
 - One document class per file, named by its acronym
 - Keep validation, generation, and masking logic inside the class
 - Extract weight sequences and magic numbers into class-level constants
-- Use `BaseDoc` helper methods (`_only_digits`, `_validate_input`) instead of reimplementing
+- Use `DocumentBase` helper methods (`_only_digits`, `_validate_input`) instead of reimplementing
+- Absolute imports: `from validate_docbr.DocumentBase import DocumentBase` (not relative)
 
 ## Error Handling
 
@@ -102,7 +106,7 @@ def generate_list(self, n=1, mask=False, repeat=False) -> list: ...  # untyped l
 
 ## Testing
 
-### Project Pattern (unittest.TestCase + pytest runner)
+### Project Pattern (unittest.TestCase + pytest runner + Given-When-Then)
 ```python
 import unittest
 import validate_docbr as docbr
@@ -112,26 +116,43 @@ class TestDoc(unittest.TestCase):
         self.doc = docbr.DocClass()
 
     def test_generate_validate(self):
-        """Batch: generate 5000+ docs, validate all must pass."""
-        docs = self.doc.generate_list(5000) \
-               + self.doc.generate_list(5000, mask=True) \
-               + self.doc.generate_list(5000, mask=True, repeat=True)
+        # Given
+        quantity = 10
+
+        # When
+        docs = self.doc.generate_list(quantity) \
+               + self.doc.generate_list(quantity, mask=True) \
+               + self.doc.generate_list(quantity, mask=True, repeat=True)
+
+        # Then
         validates = self.doc.validate_list(docs)
-        self.assertTrue(sum(validates) == 15000)
+        self.assertTrue(sum(validates) == quantity * 3)
 
     def test_mask(self):
-        """Single known input → expected masked output."""
-        self.assertEqual(self.doc.mask('12345'), '123-45')
+        # Given
+        doc = '12345'
+        doc_expected = '123-45'
+
+        # When
+        result = self.doc.mask(doc)
+
+        # Then
+        self.assertEqual(result, doc_expected)
 
     def test_special_case(self):
-        """Edge cases: invalid chars, wrong length, repeated digits, etc."""
+        # Given
         cases = [('invalid', False), ('valid_doc', True)]
+
         for doc, expected in cases:
-            self.assertEqual(self.doc.validate(doc), expected)
+            # When
+            result = self.doc.validate(doc)
+
+            # Then
+            self.assertEqual(result, expected)
 ```
 
 ### Guidelines
-- Coverage threshold: 97.50% (enforced by `.coveragerc`)
+- Coverage threshold: 98.00% (enforced by `.coveragerc`)
 - Test every code path: valid docs, invalid docs, edge cases, masked input, wrong length
 - Test that `generate()` always produces valid docs (the batch test)
 - Test that `mask()` output can be validated (roundtrip)

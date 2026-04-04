@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**validate-docbr** is a Python package for validating and generating Brazilian documents (CPF, CNPJ, CNH, CNS, PIS, Título Eleitoral, RENAVAM, Certidão). Published on PyPI as `validate-docbr`, currently at version 1.11.1.
+**validate-docbr** is a Python package for validating and generating Brazilian documents (CPF, CNPJ, CNH, CNS, PIS, Título Eleitoral, RENAVAM, Certidão). Published on PyPI as `validate-docbr`. Currently working toward **v2.0.0** (see issue #67).
 
 ## Language Conventions
 
@@ -19,8 +19,9 @@ All commands run via Docker. Run `make build` first to set up the container.
 ```bash
 make build            # Build Docker image (also installs git hooks)
 make test             # Run all tests with pytest
-make test-coverage    # Run tests with coverage (fail threshold: 97.50%)
+make test-coverage    # Run tests with coverage (fail threshold: 98.00%)
 make lint             # Run all linters (commit, markdown, dockerfile, yaml, shell, python)
+make lint-fix         # Auto-fix Python lint issues
 make shell            # Open a bash shell in the container
 ```
 
@@ -32,7 +33,7 @@ docker compose run --rm -v $(pwd):/app app pytest tests/test_CPF.py::TestCpf::te
 
 ## Architecture
 
-Every document type is a class inheriting from `BaseDoc` (abstract base class in `validate_docbr/BaseDoc.py`). `BaseDoc` defines the interface:
+Every document type is a class inheriting from `DocumentBase` (abstract base class in `validate_docbr/DocumentBase.py`). `DocumentBase` defines the interface:
 
 - `validate(doc)` — abstract, validates a document string
 - `generate(mask)` — abstract, generates a valid document
@@ -40,19 +41,44 @@ Every document type is a class inheriting from `BaseDoc` (abstract base class in
 - `validate_list`, `generate_list` — concrete, built on the abstract methods
 - `_only_digits`, `_validate_input` — shared utility methods
 
-Each document class (e.g., `CPF.py`, `CNPJ.py`) implements the three abstract methods with document-specific validation logic (check digits, length, masks).
+Unimplemented abstract methods raise `FunctionNotImplementedError` (defined in `validate_docbr/exceptions.py`).
+
+Each document class (e.g., `CPF.py`, `CNPJ.py`) implements the three abstract methods with document-specific validation logic (check digits, length, masks). Imports use absolute style: `from validate_docbr.DocumentBase import DocumentBase`.
 
 `generic.py` provides `validate_docs()`, a standalone function that validates heterogeneous document lists.
 
 ## Adding a New Document
 
-1. Create a class in `validate_docbr/` inheriting from `BaseDoc`, named by the document's acronym
+1. Create a class in `validate_docbr/` inheriting from `DocumentBase`, named by the document's acronym
 2. Implement `validate`, `generate`, and `mask`
 3. Export it in `validate_docbr/__init__.py`
-4. Add tests in `tests/test_<Name>.py` (tests use `unittest`)
+4. Add tests in `tests/test_<Name>.py` (tests use `unittest` with Given-When-Then pattern)
+
+## Coding Conventions
+
+- **Type hints**: use modern generic syntax (`list[str]`, `str | None`) — no `typing.List`, `typing.Optional`, etc. (PEP 585)
+- **Imports**: absolute style (`from validate_docbr.DocumentBase import DocumentBase`)
+- **Tests**: follow Given-When-Then pattern with `# Given`, `# When`, `# Then` comments
 
 ## CI/Pre-push
 
 - **Pre-push hook** runs lint + test-coverage (installed via `make build` → `git config core.hooksPath .githooks`)
 - **GitHub Actions** (`integration.yml`) runs lint then tests on PRs to `main`
-- Coverage must stay at or above **97.50%**
+- Coverage must stay at or above **98.00%**
+
+## v2.0.0 Roadmap (issue #67)
+
+Done:
+- [x] Rename `BaseDoc` → `DocumentBase`
+- [x] Abstract methods raise `FunctionNotImplementedError` when not implemented
+- [x] Type hints modernized to PEP 585 generic syntax
+- [x] Tests refactored to Given-When-Then pattern
+- [x] Coverage threshold raised to 98%
+
+Pending:
+- [ ] Accept new alphanumeric CNPJ format (must accept both old numeric and new alphanumeric)
+- [ ] Improve code readability (rename single-letter variables, avoid `else`, etc.)
+- [ ] Use RegEx for document string validation
+- [ ] Improve docstrings (Google Style Guide)
+- [ ] Migrate documentation tool (from MkDocs to Docsify/Docusaurus/GitBook)
+- [ ] Consider migrating Makefile to Taskfile
