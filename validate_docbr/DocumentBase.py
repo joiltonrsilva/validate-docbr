@@ -111,7 +111,10 @@ class DocumentBase(ABC):
         return "".join(char for char in doc if char.isdigit() or char.isalpha())
 
     def _validate_input(
-        self, doc: str, valid_characters: list[str] | None = None, allow_letters: bool = False
+        self,
+        doc: str,
+        valid_characters: list[str] | None = None,
+        allow_letters: bool = False,
     ) -> bool:
         """Valida se o input contém apenas caracteres permitidos usando RegEx.
 

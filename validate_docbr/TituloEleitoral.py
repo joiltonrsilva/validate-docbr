@@ -117,7 +117,10 @@ class TituloEleitoral(DocumentBase):
                                 + [first_check_digit]
         total = sum(
             digit * weight
-            for digit, weight in zip(digits_to_consider, self.second_check_digit_weights)
+            for digit, weight in zip(
+                digits_to_consider,
+                self.second_check_digit_weights,
+            )
         )
 
         if total % 11 == 10:

@@ -48,3 +48,13 @@ class TestCns(unittest.TestCase):
 
             # Then
             self.assertEqual(doc_validated, is_valid)
+
+    def test_adjust_cns_with_invalid_remainder_zero(self):
+        # Given
+        cns = list('700000000000000')
+
+        # When
+        result = self.cns._adjust_cns(cns, 0, 0)
+
+        # Then
+        self.assertTrue(self.cns._check_cns_valid(result))
