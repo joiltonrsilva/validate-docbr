@@ -4,10 +4,6 @@
   <img src="https://img.shields.io/pypi/v/validate-docbr.svg" alt="latest release" />
 </a>
 
-> :warning: Estamos planejando a versão `2.0.0` do pacote. **Para saber as mudanças que estão por
-> vir, leia a [issue #67](https://github.com/alvarofpp/validate-docbr/issues/67)**.
-> Você também pode sugerir atualizações para o pacote na mesma issue, participe! :warning:
-
 Pacote Python para validação de documentos brasileiros.
 
 Para instalar o pacote:
@@ -16,7 +12,14 @@ Para instalar o pacote:
 pip install validate-docbr
 ```
 
-A documentação pode ser acessada [clicando aqui](https://alvarofpp.github.io/validate-docbr).
+Ou com [uv](https://docs.astral.sh/uv/):
+
+```shell
+uv add validate-docbr
+```
+
+A documentação pode ser acessada
+[clicando aqui](https://alvarofpp.github.io/validate-docbr).
 
 ## Documentos
 
@@ -24,26 +27,35 @@ Documentos que estão no pacote:
 
 - [CPF](validate_docbr/CPF.py): Cadastro de Pessoas Físicas;
 - [CNH](validate_docbr/CNH.py): Carteira Nacional de Habilitação;
-- [CNPJ](validate_docbr/CNPJ.py): Cadastro Nacional da Pessoa Jurídica;
+- [CNPJ](validate_docbr/CNPJ.py): Cadastro Nacional da Pessoa
+  Jurídica (numérico e alfanumérico);
 - [CNS](validate_docbr/CNS.py): Cartão Nacional de Saúde;
 - [PIS](validate_docbr/PIS.py): PIS/NIS/PASEP/NIT;
-- [Título eleitoral](validate_docbr/TituloEleitoral.py): Cadastro que permite cidadãos brasileiros votar;
-- [RENAVAM](validate_docbr/RENAVAM.py): Registro Nacional de Veículos Automotores.
+- [Título eleitoral](validate_docbr/TituloEleitoral.py):
+  Cadastro que permite cidadãos brasileiros votar;
+- [RENAVAM](validate_docbr/RENAVAM.py): Registro Nacional de
+  Veículos Automotores;
+- [Certidão](validate_docbr/Certidao.py): Certidão de
+  Nascimento/Casamento/Óbito.
 
-Para entender melhor os documentos e suas respectivas classes, basta acessar a [Wiki do projeto](https://github.com/alvarofpp/validate-docbr/wiki).
+Para entender melhor os documentos e suas respectivas classes,
+basta acessar a
+[Wiki do projeto](https://github.com/alvarofpp/validate-docbr/wiki).
 
 ## Métodos
 
-Todos os documentos possuem os mesmos métodos e funcionam da mesma forma.
+Todos os documentos possuem os mesmos métodos e funcionam da
+mesma forma.
 
 ### validate
 
-Valida o documento passado como argumento. Retorna um `bool`, `True` caso seja válido,
-`False` caso contrário. Recebe os parâmetros:
+Valida o documento passado como argumento. Retorna um `bool`,
+`True` caso seja válido, `False` caso contrário.
+Recebe os parâmetros:
 
-| Parâmetro | Tipo | Valor padrão | Obrigatório | Descrição |
-| --------- | ---- | ----------- | ------------ | --------- |
-| `doc` | `str`| `''` | X | O documento que se quer validar. |
+| Parâmetro | Tipo  | Valor padrão | Obrigatório | Descrição          |
+| --------- | ----- | ------------ | ----------- | ------------------ |
+| `doc`     | `str` | `''`         | X           | Documento a validar. |
 
 ```python
 from validate_docbr import CPF
@@ -59,12 +71,13 @@ cpf.validate("012.345.678-91")  # False
 
 ### validate_list
 
-Valida uma lista de documentos passado como argumento. Retorna uma lista de `bool`,
-`True` caso seja válido, `False` caso contrário. Recebe os parâmetros:
+Valida uma lista de documentos passado como argumento.
+Retorna uma lista de `bool`, `True` caso seja válido,
+`False` caso contrário. Recebe os parâmetros:
 
-| Parâmetro | Tipo | Valor padrão | Obrigatório | Descrição |
-| --------- | ---- | ----------- | ------------ | --------- |
-| `docs` | `List[str]`| `[]` | X | A lista de documentos para validar. |
+| Parâmetro | Tipo         | Valor padrão | Obrigatório | Descrição       |
+| --------- | ------------ | ------------ | ----------- | --------------- |
+| `docs`    | `list[str]`  | `[]`         | X           | Lista de docs.  |
 
 ```python
 from validate_docbr import CPF
@@ -72,45 +85,47 @@ from validate_docbr import CPF
 cpf = CPF()
 
 # Validar CPFs
-cpf.validate_list(["012.345.678-90", "012.345.678-91"])  # [True, False]
+cpf.validate_list(["012.345.678-90", "012.345.678-91"])
+# [True, False]
 ```
 
 ### validate_docs
 
-**Observação**: diferente dos outros métodos, esse método é do escopo global do pacote,
-não precisa-se instanciar uma classe para uso.
+**Observação**: diferente dos outros métodos, esse método é
+do escopo global do pacote, não precisa-se instanciar uma
+classe para uso.
 
-Valida vários documentos difererentes. Retorna uma lista com valores `bool` para cada tupla da
-lista (na mesma ordem), `True` caso seja válido, `False` caso contrário. Recebe os parâmetros:
+Valida vários documentos diferentes. Retorna uma lista com
+valores `bool` para cada tupla da lista (na mesma ordem),
+`True` caso seja válido, `False` caso contrário.
+Recebe os parâmetros:
 
-<!-- markdownlint-disable MD013 -->
+| Parâmetro   | Tipo               | Obrigatório | Descrição        |
+| ----------- | ------------------ | ----------- | ---------------- |
+| `documents` | `list[tuple[...]]` | X           | Lista de tuplas. |
 
-| Parâmetro | Tipo | Valor padrão | Obrigatório | Descrição |
-| --------- | ---- | ----------- | ------------ | --------- |
-| `documents` | `List[Tuple[BaseDoc, str]]`| `[]` | X | Lista de tuplas, cada tupla possui como primeiro elemento o tipo de documento e o segundo elemento o valor que se deseja validar. |
-
-<!-- markdownlint-enable MD013 -->
+Cada tupla possui como primeiro elemento o tipo de documento
+(`DocumentBase`) e o segundo o valor que se deseja validar.
 
 ```python
 import validate_docbr as docbr
 
-
 # Validar diferentes documentos
-docs = [(docbr.CPF, '90396100457'), (docbr.CNPJ, '49910753848365')]
+docs = [
+    (docbr.CPF, '90396100457'),
+    (docbr.CNPJ, '49910753848365'),
+]
 docbr.validate_docs(docs)  # [True, False]
 ```
 
 ### generate
 
-Gera um novo documento, retorna em formato de `str`. Recebe os parâmetros:
+Gera um novo documento, retorna em formato de `str`.
+Recebe os parâmetros:
 
-<!-- markdownlint-disable MD013 -->
-
-| Parâmetro | Tipo | Valor padrão | Obrigatório | Descrição |
-| --------- | ---- | ----------- | ------------ | --------- |
-| `mask` | `bool` | `False` | - | Quando possui o valor `True`, o documento retornado estará formatado. |
-
-<!-- markdownlint-enable MD013 -->
+| Parâmetro | Tipo   | Valor padrão | Obrigatório | Descrição            |
+| --------- | ------ | ------------ | ----------- | -------------------- |
+| `mask`    | `bool` | `False`      | -           | Retorna com máscara. |
 
 ```python
 from validate_docbr import CPF
@@ -124,14 +139,14 @@ new_cpf_two = cpf.generate(mask=True)  # "012.345.678-90"
 
 ### generate_list
 
-Gera uma lista de documentos, retorna em formato de `list` com elementos do tipo `str`.
-Recebe os parâmetros:
+Gera uma lista de documentos, retorna em formato de `list`
+com elementos do tipo `str`. Recebe os parâmetros:
 
-| Parâmetro | Tipo | Valor padrão | Obrigatório | Descrição |
-| --------- | ---- | ----------- | ------------ | --------- |
-| `n` | `int` | `1` | X | A quantidade desejada de documentos que serão gerados. |
-| `mask` | `bool` | `False` | - | Se os documentos gerados deverão ter ou não máscara. |
-| `repeat` | `bool` | `False` | - | Se aceita ou não documentos repetidos. |
+| Parâmetro | Tipo   | Valor padrão | Obrigatório | Descrição          |
+| --------- | ------ | ------------ | ----------- | ------------------ |
+| `n`       | `int`  | `1`          | X           | Quantidade.        |
+| `mask`    | `bool` | `False`      | -           | Com máscara.       |
+| `repeat`  | `bool` | `False`      | -           | Aceita repetidos.  |
 
 ```python
 from validate_docbr import CPF
@@ -139,18 +154,21 @@ from validate_docbr import CPF
 cpf = CPF()
 
 # Gerar lista de CPFs
-cpfs_one = cpf.generate_list(2)  # [ "85215667438", "28293145811" ]
-cpfs_two = cpf.generate_list(2, mask=True)  # [ "852.156.674-38", "282.931.458-11" ]
+cpfs_one = cpf.generate_list(2)
+# [ "85215667438", "28293145811" ]
+cpfs_two = cpf.generate_list(2, mask=True)
+# [ "852.156.674-38", "282.931.458-11" ]
 ```
 
 ### mask
 
-Mascara o documento passado como argumento. Retorna um `str` que é o documento mascarado.
-Recebe os parâmetros:
+Mascara o documento passado como argumento. Retorna um `str`
+que é o documento mascarado. Aceita documentos com ou sem
+pontuação. Recebe os parâmetros:
 
-| Parâmetro | Tipo | Valor padrão | Obrigatório | Descrição |
-| --------- | ---- | ----------- | ------------ | --------- |
-| `doc` | `str`| `''` | X | O documento que se quer mascarar. |
+| Parâmetro | Tipo  | Valor padrão | Obrigatório | Descrição            |
+| --------- | ----- | ------------ | ----------- | -------------------- |
+| `doc`     | `str` | `''`         | X           | Documento a mascarar. |
 
 ```python
 from validate_docbr import CPF
@@ -168,11 +186,17 @@ cpf.mask(cpf_me)  # "012.345.678-90"
 Para realizar os testes basta executar o seguinte comando:
 
 ```shell
-make test
+task test
 ```
 
 Para verificar a cobertura de testes:
 
 ```shell
-make test-coverage
+task test-coverage
+```
+
+Para verificar os tipos:
+
+```shell
+task type-check
 ```

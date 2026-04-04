@@ -1,15 +1,17 @@
-FROM python:3.12.1-slim
+FROM python:3.12-slim
 
-# Virtual environment
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Install requirements
-# hadolint ignore=DL3013
-RUN pip3 install --no-cache-dir --upgrade pip
-COPY requirements.txt /tmp/requirements.txt
-RUN pip3 install --no-cache-dir --requirement /tmp/requirements.txt
+ENV UV_COMPILE_BYTECODE=1
 
-# Set environment variables
-ENV WORKDIR=/app
-WORKDIR ${WORKDIR}
+WORKDIR /app
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project
+
+COPY . /app
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked

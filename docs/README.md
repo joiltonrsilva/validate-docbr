@@ -13,3 +13,9 @@ Para instalar o pacote:
 ```bash
 pip install validate-docbr
 ```
+
+Ou com [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv add validate-docbr
+```
